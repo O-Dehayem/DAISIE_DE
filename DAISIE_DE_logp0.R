@@ -45,4 +45,4 @@ DAISIE_DE_logp0 <- function(datalist, pars1)
       logL0b <- log(L0)
       return(logL0b)
 }
-DAISIE_DE_logp0(datalist, pars1)
+#DAISIE_DE_logp0(datalist, pars1)
