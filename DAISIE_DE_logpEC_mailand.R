@@ -69,7 +69,7 @@ Likelihood_EC_M_lineage <- function(datalist, i, pars1) {
   
   # Initial conditions
   ro <- length(datalist[[i]]$branching_times)/(length(datalist[[i]]$branching_times) + datalist[[i]]$missing_species)
-  initial_conditions1 <- c(D1 = ro, D0 = 1, Dm = 0, E1 = 0)
+  initial_conditions1 <- c(D1 = ro, D0 = 1, Dm = 0, E1 = 1-ro)
   
   solution0 <- ode(y = initial_conditions1,
                    times = c(0,ti),
