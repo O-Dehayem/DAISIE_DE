@@ -24,7 +24,12 @@ library(pracma)
 
 
 
-Likelihood_NE_unknown_lineage <- function(datalist, i, pars1) {
+DAISIE_DE_logpNE_unknown_coltime <- function(datalist,
+                                          i,
+                                          pars1,
+                                          methode,
+                                          rtol, 
+                                          atol) {
   t0 <- datalist[[1]]$island_age
   tp <- 0
   parameters <- pars1
@@ -49,8 +54,9 @@ Likelihood_NE_unknown_lineage <- function(datalist, i, pars1) {
                    times = time1,
                    func = interval1,
                    parms = parameters,
-                   method = "lsodes",
-                   rtol = 1e-12, atol = 1e-12)
+                   method = methode,
+                   rtol = rtol, 
+                   atol = atol)
   
   # Extract log-likelihood
   L0 <- solution1[, "D0"][[2]]
