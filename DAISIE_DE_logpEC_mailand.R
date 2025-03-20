@@ -11,22 +11,28 @@ library(pracma)
 
 ### Using D-E approach
 
-# pars2[1] corresponds to lx = length of ODE variable x
-# pars2[2] = 11: linear dependence in speciation rate and in immigration rate
-# pars2[3] = 0: corresponds to conditioning on island age
-# pars2[4] = 1: sets that parameters and likelihood should be printed
 
 # pars1[1] corresponds to the Cladogenesis rate
 # pars1[2] corresponds to the Extinction rate of endemic lineages
 # pars1[3] corresponds to the Extinction rate of non-endemic lineages
 # pars1[4] = corresponds to the Colonization rate
 # pars1[5] = corresponds to the Anagenesis rate
+# if equal_extinction = TRUE, the extinction rates of endemic and non-endemic species are equal.
+# else, the are estimated separately
 
 
 
-
-
-Likelihood_EC_M_lineage <- function(datalist, i, pars1) {
+DAISIE_DE_logpEC_mainland <- function(datalist,
+                                      i,
+                                      pars1,
+                                      methode,
+                                      rtol, 
+                                      atol,
+                                      equal_extinction = FALSE) {
+  if (equal_extinction) {
+    pars1[3] <- pars1[2]
+  }
+  
   t0 <- datalist[[1]]$island_age
   t1 <- datalist[[i]]$branching_times[2]
   t2 <- datalist[[i]]$branching_times[3]
@@ -34,6 +40,7 @@ Likelihood_EC_M_lineage <- function(datalist, i, pars1) {
   ti <- sort(datalist[[i]]$branching_times)
   ti <- ti[1:(length(ti)-2)]
   parameters <-  pars1
+  
   # Define system of equations for interval [t2, tp]
   interval1 <- function(t, state, parameters) {
     with(as.list(c(state, parameters)), {
@@ -70,71 +77,61 @@ Likelihood_EC_M_lineage <- function(datalist, i, pars1) {
   # Initial conditions
   number_of_species <- length(datalist[[i]]$branching_times) -1 
   number_of_missing_species <- datalist[[i]]$missing_species
-  ro <- number_of_species/(number_of_missing_species +number_of_species) 
-  initial_conditions1 <- c(D1 = ro, D0 = 1, Dm = 0, E1 = 1-ro)
+  ro <- number_of_species / (number_of_missing_species + number_of_species) 
+  initial_conditions1 <- c(D1 = ro, D0 = 1, Dm = 0, E1 = 1 - ro)
   
   solution0 <- ode(y = initial_conditions1,
-                   times = c(0,ti),
+                   times = c(0, ti),
                    func = interval1,
                    parms = parameters,
-                   method = "lsodes",
-                   rtol = 1e-12, atol = 1e-12)
+                   method = methode,
+                   rtol = rtol, 
+                   atol = atol)
   
-  # Time sequences for interval [t2, tp]
-  times <- rbind(c(0,ti[1:(length(ti)-1)]),ti)
+  times <- rbind(c(0, ti[1:(length(ti)-1)]), ti)
   
-  for (idx in 1:length(ti)){
-    # Time sequence idx in interval [t2,tp]
-    time1 <- times[,idx]
-    
-    # Solve the system for interval [t2, tp]
+  for (idx in 1:length(ti)) {
+    time1 <- times[, idx]
     solution1 <- ode(y = initial_conditions1,
                      times = time1,
                      func = interval1,
                      parms = parameters,
-                     method = "lsodes",
-                     rtol = 1e-12, atol = 1e-12)
-    
-    # Initial conditions
+                     method = methode,
+                     rtol = rtol, 
+                     atol = atol)
     initial_conditions1 <- c(D1 = pars1[1] * solution0[, "D1"][idx+1] * solution1[, "D1"][2],
                              D0 = 1, Dm = 0, E1 = solution0[, "E1"][idx+1])
   }
   
-  # Initial conditions
   initial_conditions2 <- c(D1 = initial_conditions1["D1"][[1]],
                            D0 = solution0[, "D0"][length(ti)+1],
                            Dm = solution0[, "Dm"][length(ti)+1],
                            DM = initial_conditions1["D1"][[1]] * solution0[, "D0"][length(ti)+1],
                            E1 = initial_conditions1["E1"][[1]])
   
-  # Time sequence for interval [t1, t2]
   time2 <- c(t2, t1)
-  # Solve the system for interval [t2, tp]
   solution2 <- ode(y = initial_conditions2,
                    times = time2,
                    func = interval2,
                    parms = parameters,
-                   method = "lsodes",
-                   rtol = 1e-12, atol = 1e-12)
+                   method = methode,
+                   rtol = rtol, 
+                   atol = atol)
   
-  # Initial conditions
   initial_conditions3 <- c(D0 = pars1[4] * solution2[, "DM"][[2]],
                            Dm = pars1[4] * solution2[, "DM"][[2]],
                            E1 = solution2[, "E1"][[2]])
   
-  # Time sequence for interval [t0, t1]
   time3 <- c(t1, t0)
-  # Solve the system for interval [t0, t1]
   solution3 <- ode(y = initial_conditions3,
                    times = time3,
                    func = interval3,
                    parms = parameters, 
-                   method = "lsodes",
-                   rtol = 1e-12, atol = 1e-12)
+                   method = methode,
+                   rtol = rtol, 
+                   atol = atol)
   
-  # Extract log-likelihood
-  Lk <- solution3[,"D0"][[2]]
+  Lk <- solution3[, "D0"][[2]]
   logLkb <- log(Lk)
   return(logLkb)
 }
-

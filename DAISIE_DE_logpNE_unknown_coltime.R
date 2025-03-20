@@ -10,16 +10,13 @@ library(pracma)
 ### Using D-E approach
 
 
-# pars2[1] corresponds to lx = length of ODE variable x
-# pars2[2] = 11: linear dependence in speciation rate and in immigration rate
-# pars2[3] = 0: corresponds to conditioning on island age
-# pars2[4] = 1: sets that parameters and likelihood should be printed
-
 # pars1[1] corresponds to the Cladogenesis rate
 # pars1[2] corresponds to the Extinction rate of endemic lineages
 # pars1[3] corresponds to the Extinction rate of non-endemic lineages
 # pars1[4] = corresponds to the Colonization rate
 # pars1[5] = corresponds to the Anagenesis rate
+# if equal_extinction = TRUE, the extinction rates of endemic and non-endemic species are equal.
+# else, the are estimated separately
 
 
 
@@ -29,10 +26,18 @@ DAISIE_DE_logpNE_unknown_coltime <- function(datalist,
                                           pars1,
                                           methode,
                                           rtol, 
-                                          atol) {
+                                          atol,
+                                          equal_extinction = FALSE) {
+  
+  if (equal_extinction) {
+    pars1[3] <- pars1[2]
+  }
+  
+  
   t0 <- datalist[[1]]$island_age
   tp <- 0
   parameters <- pars1
+  
   # Define system of equations for interval [t0, tp]
   interval1 <- function(t, state, parameters) {
     with(as.list(c(state, parameters)), {

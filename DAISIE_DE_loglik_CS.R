@@ -1,14 +1,17 @@
+
 DAISIE_DE_loglik_CS <- function(
     pars1 = pars1,
     pars2 = pars2,
     datalist = datalist,
-    methode = methode
+    methode = methode,
+    rtol,
+    atol
 )
 {
   cond = pars2[3]
   if(length(pars1) == 5)
   {
-    logp0 = DAISIE_loglik(pars1[1:5],pars2,datalist[[1]]$island_age,0,0,methode)
+    logp0 = DAISIE_DE_logp0 (datalist, pars1, methode)
     if(is.null(datalist[[1]]$not_present))
     {
       loglik = (datalist[[1]]$not_present_type1 + datalist[[1]]$not_present_type2) * logp0
@@ -32,8 +35,8 @@ DAISIE_DE_loglik_CS <- function(
       datalist[[1]]$not_present_type2 = max(0,round(pars1[11] * numimm) - numimm_type2)
       datalist[[1]]$not_present_type1 = numimm - (length(datalist) - 1) - datalist[[1]]$not_present_type2
     }
-    logp0_type1 = DAISIE_loglik(pars1[1:5],pars2,datalist[[1]]$island_age,0,0,methode)
-    logp0_type2 = DAISIE_loglik(pars1[6:10],pars2,datalist[[1]]$island_age,0,0,methode)
+    logp0_type1 = DAISIE_DE_logp0 (datalist, pars1, methode)
+    logp0_type2 = DAISIE_DE_logp0 (datalist, pars1, methode)
     loglik = datalist[[1]]$not_present_type1 * logp0_type1 + datalist[[1]]$not_present_type2 * logp0_type2
     logcond = (cond == 1) * log(1 - exp((datalist[[1]]$not_present_type1 + numimm_type1) * logp0_type1 + (datalist[[1]]$not_present_type2 + numimm_type2) * logp0_type2))
   }
@@ -43,7 +46,7 @@ DAISIE_DE_loglik_CS <- function(
   {
     if (datalist[[i]]$stac == 1 )
     {
-      likelihood <- DAISIE_DE_logpNE_unknown_coltime(datalist, i, pars1 )
+      likelihood <- DAISIE_DE_logpNE_max_age_coltime(datalist, i, pars1, methode,rtol, atol)
       vec_likelihood <- c(vec_likelihood, likelihood)
       s1 = sprintf('Status of colonist: %d, Parameters: %f %f %f %f %f',1,pars1[1],pars1[2],pars1[3],pars1[4],pars1[5])
       s2 = sprintf(', Loglikelihood: %f',likelihood)
@@ -53,7 +56,7 @@ DAISIE_DE_loglik_CS <- function(
     else if (datalist[[i]]$stac == 2 && length(datalist[[i]]$branching_times) == 2 && datalist[[i]]$missing_species == 0)
       
     {
-      likelihood <-  DAISIE_DE_logpES(datalist, i, pars1)
+      likelihood <-  DAISIE_DE_logpES(datalist, i, pars1, methode,rtol, atol)
       vec_likelihood <- c(vec_likelihood, likelihood)
       s3 = sprintf('Status of colonist: %d, Parameters: %f %f %f %f %f',2,pars1[1],pars1[2],pars1[3],pars1[4],pars1[5])
       s4 = sprintf(', Loglikelihood: %f',likelihood)
@@ -62,7 +65,7 @@ DAISIE_DE_loglik_CS <- function(
     else if (datalist[[i]]$stac == 3 && length(datalist[[i]]$branching_times) == 2 && datalist[[i]]$missing_species == 0)
       
     {
-      likelihood <-  DAISIE_DE_logpES_mainland(datalist, i, pars1) 
+      likelihood <-  DAISIE_DE_logpES_mainland(datalist, i, pars1, methode,rtol, atol) 
       vec_likelihood <- c(vec_likelihood, likelihood)
       s3 = sprintf('Status of colonist: %d, Parameters: %f %f %f %f %f',2,pars1[1],pars1[2],pars1[3],pars1[4],pars1[5])
       s4 = sprintf(', Loglikelihood: %f',likelihood)
@@ -71,7 +74,7 @@ DAISIE_DE_loglik_CS <- function(
     else if (datalist[[i]]$stac == 3 && length(datalist[[i]]$branching_times) > 2)
       
     {
-      likelihood <-  DAISIE_DE_logpEC_mainland(datalist, i, pars1) 
+      likelihood <-  DAISIE_DE_logpEC_mainland(datalist, i, pars1, methode, rtol, atol ) 
       vec_likelihood <- c(vec_likelihood, likelihood)
       s3 = sprintf('Status of colonist: %d, Parameters: %f %f %f %f %f',2,pars1[1],pars1[2],pars1[3],pars1[4],pars1[5])
       s4 = sprintf(', Loglikelihood: %f',likelihood)
@@ -79,7 +82,7 @@ DAISIE_DE_loglik_CS <- function(
     }
     else if (datalist[[i]]$stac == 4 )
     {
-      likelihood <- DAISIE_DE_logpNE(datalist, i, pars1)
+      likelihood <- DAISIE_DE_logpNE(datalist, i, pars1, methode, rtol, atol)
       vec_likelihood <- c(vec_likelihood, likelihood)
       s5 = sprintf('Status of colonist: %d, Parameters: %f %f %f %f %f', 4, pars1[1],pars1[2],pars1[3],pars1[4],pars1[5])
       s6 = sprintf(', Loglikelihood: %f',likelihood)
@@ -87,7 +90,7 @@ DAISIE_DE_loglik_CS <- function(
     }
     else if (datalist[[i]]$stac == 5 )
     {
-      likelihood <- DAISIE_DE_logpES_unknown_coltime(datalist, i, pars1)
+      likelihood <- DAISIE_DE_logpES_max_age_coltime(datalist, i, pars1, methode, rtol, atol)
       vec_likelihood <- c(vec_likelihood, likelihood)
       s7 = sprintf('Status of colonist: %d, Parameters: %f %f %f %f %f', 5 ,pars1[1],pars1[2],pars1[3],pars1[4],pars1[5])
       s8 = sprintf(', Loglikelihood: %f',likelihood)
@@ -95,7 +98,7 @@ DAISIE_DE_loglik_CS <- function(
     }
     else if (datalist[[i]]$stac == 6 && length(datalist[[i]]$branching_times) > 2 )
     {
-      likelihood <- function_Factor_Loglik_EC_max_Age_approximation1(datalist, i, pars1)
+      likelihood <- function_Factor_Loglik_EC_max_Age_approximation1(datalist, i, pars1, methode,rtol, atol)
       vec_likelihood <- c(vec_likelihood, likelihood)
       s9 = sprintf('Status of colonist: %d, Parameters: %f %f %f %f %f', 6, pars1[1], pars1[2],pars1[3],pars1[4],pars1[5])
       s10 = sprintf(', Loglikelihood: %f',likelihood)
@@ -104,7 +107,7 @@ DAISIE_DE_loglik_CS <- function(
     else if (datalist[[i]]$stac == 2 && length(datalist[[i]]$branching_times) > 2)
     {
       
-      likelihood <- DAISIE_DE_logpEC(datalist, i, pars1) 
+      likelihood <- DAISIE_DE_logpEC(datalist, i, pars1, methode, rtol, atol) 
       vec_likelihood <- c(vec_likelihood, likelihood)
       s11 = sprintf('Status of colonist: %d, Parameters: %f %f %f %f %f',2,pars1[1],pars1[2],pars1[3],pars1[4],pars1[5])
       s12 = sprintf(', Loglikelihood: %f',likelihood)
