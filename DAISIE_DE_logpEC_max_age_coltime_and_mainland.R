@@ -1,25 +1,25 @@
-#' @name DAISIE_DE_logpEC_max_age_coltime
+#' @name DAISIE_DE_logpEC_max_age_coltime_and_mainland
 #' @title Function to calculate the likelihood of observing an endemic lineage on the island
-#' with information on the maximum age of colonization
+#' with maximum age of colonization, and that coexists with its mainland ancestors.
 #' @description This function calculates the log-likelihood of observing an endemic lineage on an island
-#' for which the exact colonization time is unknown, but the maximum age of colonization is known.
-#'
+#' with maximum age of colonization, and that coexists with its mainland ancestors.
 #' @inheritParams default_params_doc_DAISIE_DE
 #' @return The output is a numeric value representing the log-likelihood of observing an endemic lineage
-#' with its mainland ancestors
-#' \item{logLkb}{ The log-likelihood value computed based on a system of differential equations.}
+#' with maximum age of colonization that coexists with its mainland ancestors
+#' \item{logLkb}{ The log-likelihood value is computed based on a system of differential equations.}
 #'
-#' @export DAISIE_DE_logpEC_max_age_coltime
+#' @export DAISIE_DE_logpEC_max_age_coltime_and_mainland
+
 
 
 
 ### Using D-E approach
-DAISIE_DE_logpEC_max_age_coltime <- function(datalist,
-                                             i,
-                                             pars1,
-                                             methode,
-                                             reltolint,
-                                             abstolint) {
+DAISIE_DE_logpEC_max_age_coltime_and_mainland <- function(datalist,
+                                                          i,
+                                                          pars1,
+                                                          methode,
+                                                          reltolint,
+                                                          abstolint) {
 
   brts = datalist[[i]]$branching_times
   missnumspec = datalist[[i]]$missing_species
@@ -28,7 +28,7 @@ DAISIE_DE_logpEC_max_age_coltime <- function(datalist,
   t1 <- brts[2]
   t2 <- brts[3]
   tp <- 0
-  ti <- sort(datalist[[i]]$branching_times)
+  ti <- sort(brts)
   ti <- ti[1:(length(ti)-2)]
   parameters <- pars1
 
@@ -50,11 +50,11 @@ DAISIE_DE_logpEC_max_age_coltime <- function(datalist,
   }
 
   # Initial conditions
-  number_of_species <- length(brts) -1
+  number_of_species <- length(brts) - 1
   number_of_missing_species <- missnumspec
   ro <- number_of_species / (number_of_missing_species + number_of_species)
 
-  initial_conditions1 <- c(DE = ro, DA3 = 1, Dm3 = 0, E = 1 - ro)
+  initial_conditions1 <- c(DE = ro, DA3 = 0, Dm3 = 1, E = 1 - ro)
 
 
 
@@ -180,3 +180,5 @@ DAISIE_DE_logpEC_max_age_coltime <- function(datalist,
   logLkb <- log(Lk)
   return(logLkb)
 }
+
+

@@ -1,41 +1,25 @@
-#' @name DAISIE_DE_logpES
-#' @title Function to calculate the likelihood of observing an endemic singleton lineage
-#' with the colonization time at t1.
-#' @description This function calculates the log-likelihood of observing an endemic singleton lineage
-#' with the colonization time at t1.
+#' @name DAISIE_DE_logpES_mainland
+#' @title Function to calculate the likelihood of observing an endemic singleton lineage on the island
+#' that coexists with its mainland ancestor.
+#' @description This function calculates the log-likelihood of observing an endemic singleton lineage on an island
+#'  that coexists with its mainland ancestor
 #'
 #' @inheritParams default_params_doc_DAISIE_DE
 #' @return The output is a numeric value representing the log-likelihood of observing an endemic singleton lineage
-#' with the colonization time at t1.
-#' \item{logL1b}{ The log-likelihood value computed based on a system of differential equations. }
+#' on the island with its mainland ancestor.
+#' \item{logL1b}{ The log-likelihood value computed based on a system of differential equations.}
 #'
-#' @examples
-#'
-#' # Select a dataset from a DAISIE package
-#'
-#' data(Galapagos_datalist)
-#' datalist <- Galapagos_datalist
-#'
-#' # Select an endemic singleton lineage in the dataset
-#' i <- 6
-#' # Define example parameters
-#' pars1 <- c(0.2, 0.1, 0.05, 0.02, 0.03)
-#'
-#' # choose the method to solve the system of differential equations
-#' log_likelihood <- DAISIE_DE_logpES(datalist, i, pars1, methode = "lsodes", reltolint = 1e-16, abstolint = 1e-16)
-#'
-#' print(log_likelihood)
-#'
-#' @export DAISIE_DE_logpES
+#' @export DAISIE_DE_logpES_mainland
 
 
 
-DAISIE_DE_logpES <- function(datalist,
-                             i,
-                             pars1,
-                             methode,
-                             reltolint,
-                             abstolint) {
+
+DAISIE_DE_logpES_mainland <- function(datalist,
+                                      i,
+                                      pars1,
+                                      methode,
+                                      reltolint,
+                                      abstolint) {
 
   brts = datalist[[i]]$branching_times
   missnumspec = datalist[[i]]$missing_species
@@ -45,14 +29,13 @@ DAISIE_DE_logpES <- function(datalist,
   tp <- 0
   parameters <- pars1
 
-
   # Define system of equations for interval [t1, tp]
   interval1 <- function(t, state, parameters) {
     with(as.list(c(state, parameters)), {
       dDE <- -(pars1[1] + pars1[2]) * DE + 2 * pars1[1] * DE * E
-      dDA3 <- -pars1[4] * DA3 + pars1[4] * Dm3
-      dDm3 <- -(pars1[5] + pars1[1] + pars1[3]) * Dm3 + (pars1[5] * E + pars1[1] * E^2 + pars1[3]) * DA3
-      dDm2 <- -(pars1[5] + pars1[1] + pars1[3] + pars1[4]) * Dm2 + (pars1[5] * DE + 2 * pars1[1] * DE * E) * DA3
+      dDA3 <- -pars1[4] * DA3 + pars1[4] * Dm
+      dDm3 <- -(pars1[5] + pars1[1] + pars1[3]) * Dm + (pars1[5] * E + pars1[1] * E^2 + pars1[3]) * DA3
+      dDm2 <- -(pars1[5] + pars1[1] + pars1[3] + pars1[4]) * Dm2 + (pars1[5] * D1 + 2 * pars1[1] * DE * E) * DA3
       dE <- pars1[2] - (pars1[1] + pars1[2]) * E + pars1[1] * E^2
       list(c(dDE, dDA3, dDm3, dDm2, dE))
     })
@@ -68,24 +51,22 @@ DAISIE_DE_logpES <- function(datalist,
     })
   }
 
-  # Initial conditions
-
   number_of_species <- length(brts) -1
   number_of_missing_species <- missnumspec
   ro <- number_of_species / (number_of_missing_species + number_of_species)
 
+  # Initial conditions
   if (missnumspec == 0)
 
   {
-    initial_conditions1 <- c(DE = 1, DA3 = 1, Dm3 = 0, Dm2 = 0, E = 0)
+    initial_conditions1 <- c(DE = 1, DA3 = 0, Dm3 = 1, Dm2 = 0, E = 0)
   }
   else
 
   {
-    initial_conditions1 <- c(DE = ro, DA3 = 1, Dm3 = 0, Dm2 = 0, E = 1 - ro)
+    initial_conditions1 <- c(DE = ro, DA3 = 0, Dm3 = 1, Dm2 = 0, E = 1 - ro)
 
   }
-
   # Time sequence for interval [t1, tp]
   time1 <- c(tp, t1)
 
@@ -120,6 +101,3 @@ DAISIE_DE_logpES <- function(datalist,
   logL1b <- log(L1)
   return(logL1b)
 }
-
-
-
