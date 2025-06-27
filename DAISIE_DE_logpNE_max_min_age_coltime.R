@@ -1,133 +1,89 @@
 #' @name DAISIE_DE_logpNE_max_min_age_coltime
 #' @title Function to calculate the likelihood of observing a non-endemic lineage on the island
-#' with minimum and maximum ages of colonization
+#' with minimum and maximum times of colonization. This valid for infinite K according to the DE equations.
 #' @description This function calculates the log-likelihood of observing a non-endemic lineage on an island
-#' for which the exact colonization time is unknown, but the maximum and minimum ages of colonization are known.
-#'
-#' @inheritParams default_params_doc_DAISIE_DE
+#' for which the exact colonization time is unknown, but the maximum and minimum times of colonization are
+#' known. This is valid for infinite K according to the DE equations
+#' @inheritParams default_params_doc
+#' @return the loglikelihood
+#' @noRd
+DAISIE_DE_logpNE_max_min_age_coltime (brts,
+                                      status = 8,
+                                      parameter,
+                                      methode,
+                                      rtol,
+                                      atol)
 
-#' @return The output is a numeric value representing the log-likelihood of observing a non-endemic singleton lineage
-#' for which the minimum and maximum ages of colonization are given.
-#' \item{logL1b}{ The log-likelihood value computed based on the differential equation system.}
-#'
-#' @export DAISIE_DE_logpNE_max_min_age_coltime
-
-
-
-### Using D-E approach
-DAISIE_DE_logpNE_max_min_age_coltime <- function(datalist,
-                                                 i,
-                                                 pars1,
+DAISIE_DE_logpNE_max_min_age_coltime <- function(brts,
+                                                 status,
+                                                 parameter,
                                                  methode,
-                                                 reltolint,
-                                                 abstolint) {
-
-  brts = datalist[[i]]$branching_times
-  missnumspec = datalist[[i]]$missing_species
-
+                                                 rtol,
+                                                 atol,
+                                                 rcpp_methode = "odeint::bulirsch_stoer",
+                                                 use_Rcpp = 0) {
   t0 <- brts[1]
   t1 <- brts[2]
   t2 <- brts[3]
   tp <- 0
-  parameters <- pars1
-
-  interval1 <- function(t, state, parameters) {
-    with(as.list(c(state, parameters)), {
-
-      dDm2 <- -(pars1[5] + pars1[1] + pars1[3] + pars1[4]) * Dm2
-
-      dE <-  pars1[2] - (pars1[1] + pars1[2]) * E + pars1[1] * E^2
-
-      list(c(dDm2, dE))
-    })
-  }
-
-  # Time sequence for interval [t2, tp]
   time1 <- c(tp, t2)
-
-  # Initial conditions
-  initial_conditions1 <- c(Dm2 = 1, E = 0)
-
-  # Solve the system for interval [t2, tp]
-  solution1 <- deSolve::ode(y = initial_conditions1,
-                            times = time1,
-                            func = interval1,
-                            parms = parameters,
-                            method = methode,
-                            rtol = reltolint,
-                            atol = abstolint)
-
-
-
-
-
-  interval2 <- function(t, state, parameters) {
-    with(as.list(c(state, parameters)), {
-
-      dDA <-  -pars1[4] * DA + pars1[4] * Dm2
-
-      dDm1 <- -(pars1[5] + pars1[1] + pars1[3] + pars1[4]) * Dm1 +
-        (pars1[5] * E + pars1[1] * E^2 + pars1[3]) * DA + pars1[4] * Dm2
-
-      dDm2 <- -(pars1[5] + pars1[1] + pars1[3]) * Dm2 +
-        (pars1[5] * E + pars1[1] * E^2 + pars1[3]) * DA
-
-      dE <-  pars1[2] - (pars1[1] + pars1[2]) * E + pars1[1] * E^2
-
-      list(c(dDA, dDm1, dDm2, dE))
-    })
-  }
-
-
-
-  # Define system of equations for interval [t0, t1]
-  interval3 <- function(t, state, parameters) {
-    with(as.list(c(state, parameters)), {
-      dDA <- -pars1[4] * DA + pars1[4] * Dm1
-
-      dDm1 <- -(pars1[5] + pars1[1] + pars1[3]) * Dm1 + (pars1[5] * E + pars1[1] * E^2 + pars1[3]) * DA
-
-      dE <- pars1[2] - (pars1[1] + pars1[2]) * E + pars1[1] * E^2
-
-      list(c(dDA, dDm1, dE))
-    })
-  }
-
-  # Initial conditions
-  initial_conditions2 <- c(DA = 0, Dm1 = 0, Dm2 = solution1[, "Dm2"][[2]], E = solution1[, "E"][[2]])
-
-  # Time sequence for interval [t1, t2]
   time2 <- c(t2, t1)
-
-  # Solve the system for interval [t1, tp]
-  solution2 <- deSolve::ode(y = initial_conditions2,
-                            times = time2,
-                            func = interval2,
-                            parms = parameters,
-                            method = methode,
-                            rtol = reltolint,
-                            atol = abstolint)
-
-  # Initial conditions
-  initial_conditions3 <- c(DA = solution2[, "DA"][[2]],
-                           Dm1 = solution2[, "Dm1"][[2]],
-                           E = solution2[, "E"][[2]])
-
-  # Time sequence for interval [t0, t1]
   time3 <- c(t1, t0)
+  parameters <- pars1
+  
+  # Initial conditions
+  initial_conditions1 <- get_initial_conditions2(
+                                    status = status,
+                                    brts = brts,
+                                    sampling_fraction = sampling_fraction
+                                  )
 
-  # Solve the system for interval [t0, t1]
-  solution3 <- deSolve::ode(y = initial_conditions3,
-                            times = time3,
-                            func = interval3,
-                            parms = parameters,
-                            method = methode,
-                            rtol = reltolint,
-                            atol = abstolint)
+  solution1 <- solve_branch(interval_func = interval2_NE,
+                 initial_conditions = initial_conditions1,
+                 time = time1,
+                 parameter = parameter,
+                 methode = methode,
+                 rcpp_methode = rcpp_methode,
+                 atol = atol,
+                 rtol = rtol,
+                 use_Rcpp = use_Rcpp)
 
+  
+  # Initial conditions
+  initial_conditions2 <- c(DM1 = 0, DM2 = solution1[, "DM2"][[2]], E = solution1[, "E"][[2]], DA2 = 0)
+
+
+  
+  # Solve the system for interval [t1, tp]
+  solution2 <-   solve_branch(interval_func = interval3_NE,
+                              initial_conditions = initial_conditions2,
+                              time = time2,
+                              parameter = parameter,
+                              methode = methode,
+                              rcpp_methode = rcpp_methode,
+                              atol = atol,
+                              rtol = rtol,
+                              use_Rcpp = use_Rcpp)
+  
+
+  initial_conditions3 <- get_initial_conditions4(
+                                  status = status,
+                                  solution = solution2,
+                                  parameter = parameter
+                                )
+ 
+
+  solution3 <- solve_branch(interval_func = interval4,
+                            initial_conditions = initial_conditions3,
+                            time = time3,
+                            parameter = parameter,
+                            methode = methode,
+                            rcpp_methode = rcpp_methode,
+                            atol = atol,
+                            rtol = rtol,
+                            use_Rcpp = use_Rcpp)
   # Extract log-likelihood
-  L1 <- solution3[, "DA"][[2]]
+  L1 <- solution3[, "DA1"][[2]]
   logL1b <- log(L1)
   return(logL1b)
 }
-
