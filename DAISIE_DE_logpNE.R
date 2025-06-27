@@ -1,105 +1,134 @@
-#' @name DAISIE_DE_logpNE
-#' @title Function to calculate the likelihood of observing a non-endemic lineage
-#' with the colonization time at t1.
-#' @description This function calculates the log-likelihood of observing a non-endemic lineage
-#' with the colonization time at t1.
+
+#' This function calculates the likelihood of observing a non-endemic lineage with specified species trait states,
 #'
-#' @inheritParams default_params_doc_DAISIE_DE
-#' @return The output is a numeric value representing the log-likelihood of observing a non-endemic lineage
-#' with the colonization time at t1.
-#' \item{logLMb}{ The log-likelihood value computed based on the differential equation system. }
+#'
+#' @inheritParams default_params_doc
+#'
+#' @export
 #'
 #' @examples
-#'
-#' # Select a dataset from a DAISIE package
-#'
-#' data(Galapagos_datalist)
+#' library(DAISIE)
+#' data("Galapagos_datalist")
 #' datalist <- Galapagos_datalist
 #'
-#' # Select a non-endemic lineage in the dataset
 #' i <- 3
-#' # Define example parameters
-#' pars1 <- c(0.2, 0.1, 0.05, 0.02, 0.03)
+#' brts <- datalist[[i]]$branching_times
 #'
-#' # choose the method to solve the system of differential equations
-#' log_likelihood <- DAISIE_DE_logpNE(datalist, i, pars1, methode = "lsodes", reltolint = 1e-16, abstolint = 1e-16)
-#'
-#' print(log_likelihood)
-#'
-#' @export DAISIE_DE_logpNE
-
-
-
-
-DAISIE_DE_logpNE <- function(datalist,
-                             i,
-                             pars1,
-                             methode,
-                             reltolint,
-                             abstolint) {
-
-  brts = datalist[[i]]$branching_times
-  missnumspec = datalist[[i]]$missing_species
-
+#' parameter <- c(2.546591, 2.678781, Inf, 0.009326754, 1.008583)
+#' brts <- datalist[[i]]$branching_times
+#' DAISIE_DE_logpNE(
+#'   brts                    = brts,
+#'   status                  = 4,
+#'   parameter               = parameter,
+#'   atol                    = 1e-15,
+#'   rtol                    = 1e-15,
+#'   methode                 = "ode45"
+#' )
+DAISIE_DE_logpNE <- function(brts,
+                             status,
+                             parameter,
+                             sampling_fraction = NA,  # ✅ Ajouté ici
+                             atol = 1e-15,
+                             rtol = 1e-15,
+                             methode = "ode45",
+                             rcpp_methode = "odeint::bulirsch_stoer",
+                             use_Rcpp = 0) {
+  
+  # Unpack times from brts
   t0 <- brts[1]
+  tmax <- brts[2]
   t1 <- brts[2]
   tp <- 0
-  parameters <- pars1
-
-  # Define system of equations for interval [t1, tp]
-  interval1 <- function(t, state, parameters) {
-    with(as.list(c(state, parameters)), {
-      dDm2 <- -(pars1[5] + pars1[1] + pars1[3] + pars1[4]) * Dm2
-      dE <- pars1[2] - (pars1[1] + pars1[2]) * E + pars1[1] * E^2
-      list(c(dDm2, dE))
-    })
+  
+  # Define time intervals
+  time2 <- c(tp, t1)
+  time3 <- c(tp, tmax)
+  time4 <- c(tmax, t0)
+  
+  # Initialize solution4 based on status
+  if (status == 4) {
+    initial_conditions2 <- get_initial_conditions2(
+      status = status,
+      brts = brts,
+      sampling_fraction = sampling_fraction
+    )
+    
+    solution2 <- solve_branch(
+      interval_func = interval2_NE,
+      initial_conditions = initial_conditions2,
+      time = time2,
+      parameter = parameter,
+      methode = methode,
+      rcpp_methode = rcpp_methode,
+      atol = atol,
+      rtol = rtol,
+      use_Rcpp = use_Rcpp
+    )
+    
+    initial_conditions4 <- get_initial_conditions4(
+      status = status,
+      solution = solution2,
+      parameter = parameter
+    )
+    
+    solution4 <- solve_branch(
+      interval_func = interval4,
+      initial_conditions = initial_conditions4,
+      time = time4,
+      parameter = parameter,
+      methode = methode,
+      rcpp_methode = rcpp_methode,
+      atol = atol,
+      rtol = rtol,
+      use_Rcpp = use_Rcpp
+    )
+    
+  } else if (status == 1) {
+    
+    initial_conditions3 <- get_initial_conditions3(
+      status = status,
+      sampling_fraction = sampling_fraction
+    )
+    
+    solution3 <- solve_branch(
+      interval_func = interval3_NE,
+      initial_conditions = initial_conditions3,
+      time = time3,
+      parameter = parameter,
+      methode = methode,
+      rcpp_methode = rcpp_methode,
+      atol = atol,
+      rtol = rtol
+    )
+    
+    initial_conditions4 <- get_initial_conditions4(
+      status = status,
+      solution = solution3,
+      parameter = parameter
+    )
+    
+    solution4 <- solve_branch(
+      interval_func = interval4,
+      initial_conditions = initial_conditions4,
+      time = time4,
+      parameter = parameter,
+      methode = methode,
+      rcpp_methode = rcpp_methode,
+      atol = atol,
+      rtol = rtol,
+      use_Rcpp = use_Rcpp
+    )
+    
+  } else {
+    stop("Unsupported status. Currently, only status 1 and 4 are handled.")
   }
-
-  # Define system of equations for interval [t0, t1]
-  interval2 <- function(t, state, parameters) {
-    with(as.list(c(state, parameters)), {
-      dDA1 <- -pars1[4] * DA1 + pars1[4] * Dm1
-      dDm1 <- -(pars1[5] + pars1[1] + pars1[3]) * Dm1 + (pars1[5] * E + pars1[1] * E^2 + pars1[3]) * DA1
-      dE <- pars1[2] - (pars1[1] + pars1[2]) * E + pars1[1] * E^2
-      list(c(dDA1, dDm1, dE))
-    })
-  }
-
-  # Set initial conditions
-  initial_conditions1 <- c(Dm2 = 1, E = 0)
-
-  # Time sequence for interval [t1, tp]
-  time1 <- c(tp, t1)
-
-  # Solve the system for interval [t1, tp]
-  solution1 <- deSolve::ode(y = initial_conditions1,
-                            times = time1,
-                            func = interval1,
-                            parms = parameters,
-                            method = methode,
-                            rtol = reltolint,
-                            atol = abstolint)
-
-  # Set initial conditions
-  initial_conditions2 <- c(DA1 = pars1[4] * solution1[, "Dm2"][[2]],
-                           Dm1 = pars1[4] * solution1[, "Dm2"][[2]],
-                           E = solution1[, "E"][[2]])
-
-  # Time sequence for interval [t0, t1]
-  time2 <- c(t1, t0)
-
-  # Solve the system for interval [t0, t1]
-  solution2 <- deSolve::ode(y = initial_conditions2,
-                            times = time2,
-                            func = interval2,
-                            parms = parameters,
-                            method = methode,
-                            rtol = reltolint,
-                            atol = abstolint)
-
+  
   # Extract log-likelihood
-  LM <- solution2[, "DA1"][[2]]
-  logLMb <- log(LM)
-  return(logLMb)
+  if (!"DA1" %in% colnames(solution4)) {
+    stop("Expected column 'DA1' not found in solution4.")
+  }
+  
+  Lk <- solution4[, "DA1"][[2]]
+  logLkb <- log(Lk)
+  return(logLkb)
 }
-
