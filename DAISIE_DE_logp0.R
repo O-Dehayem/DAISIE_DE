@@ -22,12 +22,12 @@
 
 
 DAISIE_DE_logp0 <- function(datalist,
-                                  parameter,
-                                  atol = 1e-15,
-                                  rtol = 1e-15,
-                                  methode = "ode45",
-                                  rcpp_methode = "odeint::bulirsch_stoer",
-                                  use_Rcpp = 0) {
+                            parameter,
+                            atol = 1e-15,
+                            rtol = 1e-15,
+                            methode = "ode45",
+                            rcpp_methode = "odeint::bulirsch_stoer",
+                            use_Rcpp = 0) {
   
 
   t0 <- datalist[[1]]$island_age

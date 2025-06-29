@@ -21,7 +21,7 @@
 #' missnumspec <- datalist[[i]]$missing_species
 #' DAISIE_DE_logpEC(
 #'   brts                    = brts,
-#'   status                  = 6,
+#'   status                  = 2,
 #'   parameter               = parameter,
 #'   atol                    = 1e-15,
 #'   missnumspec             = missnumspec,
@@ -165,7 +165,7 @@ DAISIE_DE_logpEC <- function(brts,
                                 atol = atol)
       
       # Initial conditions
-      initial_conditions1 <- c(DE = pars1[1] * solution0[, "DE"][idx + 1] * solution1[, "DE"][2],
+      initial_conditions1 <- c(DE = parameter[1] * solution0[, "DE"][idx + 1] * solution1[, "DE"][2],
                                DM3 = 0, E = solution0[, "E"][idx + 1], DA3 = 1)
     }
     
@@ -209,7 +209,8 @@ DAISIE_DE_logpEC <- function(brts,
                               atol = atol,
                               rtol = rtol,
                               use_Rcpp = use_Rcpp)
-     }  if (status == 3 & length(brts) > 2) {
+     } else if (status == 3 & length(brts) > 2) {
+
        initial_conditions1 <- get_initial_conditions2(status = status,
                                                       brts = brts,
                                                       sampling_fraction = sampling_fraction

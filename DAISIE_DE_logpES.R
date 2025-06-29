@@ -11,7 +11,7 @@
 #' data("Galapagos_datalist")
 #' datalist <- Galapagos_datalist
 #'
-#' i <- 9
+#' i <- 6
 #' brts <- datalist[[i]]$branching_times
 #'
 #' parameter <- c(2.546591, 2.678781, Inf, 0.009326754, 1.008583)
@@ -19,7 +19,7 @@
 #' missnumspec <- datalist[[i]]$missing_species
 #' DAISIE_DE_logpES(
 #'   brts                    = brts,
-#'   status                  = 5,
+#'   status                  = 2,
 #'   parameter               = parameter,
 #'   atol                    = 1e-15,
 #'   missnumspec             = missnumspec,

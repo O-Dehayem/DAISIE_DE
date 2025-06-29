@@ -27,7 +27,7 @@
 DAISIE_DE_logpNE <- function(brts,
                              status,
                              parameter,
-                             sampling_fraction = NA,  # ✅ Ajouté ici
+                             sampling_fraction = NA,
                              atol = 1e-15,
                              rtol = 1e-15,
                              methode = "ode45",

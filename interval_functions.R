@@ -11,8 +11,7 @@ interval2_NE <- function(t, state, parameter) {
 
     dDM2 <- -(lambdac + mu + gamma + lambdaa) * DM2
 
-    dE <- mu - (mu + lambdac) * E +
-      lambdac * E * E
+    dE <- mu - (mu + lambdac) * E + lambdac * E * E
 
     return(list(c(dDM2, dE)))
   })

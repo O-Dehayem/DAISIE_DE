@@ -77,7 +77,7 @@ DAISIE_DE_loglik_CS <- function( parameter,
                                         methode                 = "ode45",
                                         rcpp_methode = "odeint::bulirsch_stoer",
                                         use_Rcpp = 0)
-    } else if (status == 2 && length(brts) == 2 || status == 3 && length(brts) == 2 || status == 5) {
+    } else if (status == 2 && length(brts) == 2 || status == 3 && length(brts) == 2 || status == 5 && length(brts) == 2 || status == 6) {
   
         loglikelihood <- DAISIE_DE_logpES(brts,
                                           status,
@@ -88,7 +88,7 @@ DAISIE_DE_loglik_CS <- function( parameter,
                                           methode                 = "ode45",
                                           rcpp_methode = "odeint::bulirsch_stoer",
                                           use_Rcpp = 0)
-    } else if (status == 2 && length(brts) > 2 || status == 3 && length(brts) > 2 || status == 5) {
+    } else if (status == 2 && length(brts) > 2 || status == 3 && length(brts) > 2 || status == 6) {
       
       loglikelihood <- DAISIE_DE_logpEC(brts,
                                         status,
@@ -136,11 +136,4 @@ DAISIE_DE_loglik_CS <- function( parameter,
   loglik <- sum(vec_loglikelihood) + loglik
   return(loglik)
 }
-data(Macaronesia_datalist)
 
-DAISIE_DE_loglik_CS ( parameter = c(0.000000, 0.767607, Inf, 0.026216, 0.462811),
-                         pars2 = c(100, 11, 0, 1),
-                         datalist = Macaronesia_datalist$CapeVerde,
-                         methode = "lsodes",
-                         abstolint = 1e-15,
-                         reltolint = 1e-15)
