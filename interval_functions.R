@@ -1,138 +1,138 @@
 
+# initial conditions system of equation interval 2
 #' @keywords internal
-interval2_NE <- function(t, state, parameter) {
-  with(as.list(c(state, parameter)), {
+get_initial_conditions2 <- function(status,
+                                    brts,
+                                    sampling_fraction) {
+  
+  if (status == 6 || status == 2 && length(brts) > 2) {
+    initial_conditions2 <- c(
+      DE = sampling_fraction, 
+      DM3 = 0,
+      E = 1 - sampling_fraction, 
+      DA3 = 1
+    )
+  } else if (status == 3 && length(brts) > 2) {
+    initial_conditions2 <- c(
+      DE = sampling_fraction, 
+      DM3 = 1,
+      E = 1 - sampling_fraction, 
+      DA3 = 0
+    )
+  } else if (status == 9 || status == 2 && length(brts) == 2) {
+    initial_conditions2 <- c(
+      DE = sampling_fraction, 
+      DM2 = 0,
+      DM3 = 0,
+      E = 1 - sampling_fraction, 
+      DA3 = 1
+    )
     
-    lambdac <- parameter[1]
-    mu      <- parameter[2]
-    gamma   <- parameter[4]
-    lambdaa <- parameter[5]
-
-
-    dDM2 <- -(lambdac + mu + gamma + lambdaa) * DM2
-
-    dE <- mu - (mu + lambdac) * E +
-      lambdac * E * E
-
-    return(list(c(dDM2, dE)))
-  })
+  } else if (status == 3 && length(brts) == 2) {
+    initial_conditions2 <- c(
+      DE = sampling_fraction, 
+      DM2 = 0,
+      DM3 = 1,
+      E = 1 - sampling_fraction, 
+      DA3 = 0
+    )
+    
+  } else if (status %in% c(4, 8)) {
+    initial_conditions2 <- c(
+      DM2 = 1,
+      E = 0
+    )
+    
+  } else {
+    stop("Unsupported status or brts length in get_initial_conditions2()")
+  }
+  
+  return(initial_conditions2)
 }
 
 
-interval2_ES <- function(t, state, parameter) {
-  with(as.list(c(state, parameter)), {
-    lambdac <- parameter[1]
-    mu      <- parameter[2]
-    gamma   <- parameter[4]
-    lambdaa <- parameter[5]
 
-
-    
-    dDE <- -(lambdac + mu) * DE + 2 * lambdac * DE * E
-    
-    dDM2 <- -(lambdac + mu + gamma + lambdaa) * DM2 + (lambdaa * DE + 2 * lambdac * DE * E) * DA3
-    
-    dDM3 <- -(lambdac + mu + lambdaa) * DM3 + (mu + lambdaa * E + lambdac * E * E) * DA3
-    
-    dE <- mu - (mu + lambdac) * E + lambdac * E * E
-    
-    dDA3 <- -gamma * DA3 + gamma * DM3
-    
-    return(list(c(dDE, dDM2, dDM3, dE, dDA3)))
-  })
-}
-
-
-interval2_EC <- function(t, state, parameter) {
-  with(as.list(c(state, parameter)), {
-    
-    lambdac <- parameter[1]
-    mu      <- parameter[2]
-    gamma   <- parameter[4]
-    lambdaa <- parameter[5]
-    
- 
-    dDE <- -(lambdac + mu) * DE + 2 * lambdac * DE * E
-    
-    dDM3 <- -(lambdac + mu + lambdaa) * DM3 + (mu + lambdaa * E + lambdac * E * E) * DA3
-    
-    dE <- mu - (mu + lambdac) * E + lambdac * E * E
-    
-    dDA3 <- -gamma * DA3 + gamma * DM3
-    
-    return(list(c(dDE, dDM3, dE, dDA3)))
-  })
-}
-
-
+# initial conditions system of equation interval 3
 #' @keywords internal
-interval3_ES <- function(t, state, parameter) {
-  with(as.list(c(state, parameter)), {
+get_initial_conditions3 <- function(status, 
+                                    solution = NULL,
+                                    sampling_fraction = NA) {
+  
+  if (status == 1) {
+    initial_conditions3 <- c(
+      DM1 = 0, 
+      DM2 = 1, 
+      E = 0, 
+      DA2 = 0
+    )
     
-    lambdac <- parameter[1]
-    mu      <- parameter[2]
-    gamma   <- parameter[4]
-    lambdaa <- parameter[5]
+  } else if (status == 6) {
 
+    initial_conditions3 <- c(
+      DE  = solution[, "DE"][[2]],
+      DM1 = solution[, "DM1"][[2]],
+      DM2 = solution[, "DM2"][[2]],
+      DM3 = solution[, "DM3"][[2]],
+      DA2 = solution[, "DA2"][[2]],
+      DA3 = solution[, "DA3"][[2]],
+      E   = solution[, "E"][[2]]
+    )
     
-    dDE <- -(lambdac + mu) * DE + 2 * lambdac * DE * E 
+  } else if (status == 5) {
+    initial_conditions3 <- c(
+      DE = sampling_fraction, 
+      DM1 = 0, 
+      DM2 = 0, 
+      DM3 = 0, 
+      E = 1 - sampling_fraction,
+      DA2 = 0, 
+      DA3 = 1
+    )
     
-    dDM1 <- -(lambdac + mu + lambdaa + gamma) * DM1 + gamma*DM2 + (mu + lambdaa * E + lambdac * E * E) * DA2
+  } else if (status == 8 || status == 9) {
+    initial_conditions3 <- c(
+      DE = solution[, "DE"][[2]],
+      DM1 = 0,
+      DM2 = solution[, "DM2"][[2]],
+      DM3 = solution[, "DM3"][[2]],
+      E   = solution[, "E"][[2]],
+      DA2 = 0,
+      DA3 = solution[, "DA3"][[2]]
+    )
     
-    dDM2 <- -(lambdac + mu + lambdaa) * DM2 + (mu + lambdaa * E + lambdac * E * E) * DA2 + (lambdaa * DE + 2 * lambdac * DE*E) * DA3
-    
-    dDM3 <- -(lambdac + mu + lambdaa) * DM3 + (mu + lambdaa * E + lambdac * E * E) * DA3
-    
-    dE <- mu - (mu + lambdac) * E + lambdac * E * E
-    
-    dDA2 <- -gamma * DA2 + gamma * DM2
-    dDA3 <- -gamma * DA3 + gamma * DM3
-    
-    return(list(c(dDE, dDM1, dDM2, dDM3, dE, dDA2, dDA3)))
-  })
+  } else {
+    stop("Unsupported status in get_initial_conditions3()")
+  }
+  
+  return(initial_conditions3)
 }
+
+
+
+# initial conditions system of equation interval 4
 #' @keywords internal
-interval3_NE <- function(t, state, parameter) {
-  with(as.list(c(state, parameter)), {
+get_initial_conditions4 <- function(status,
+                                    solution,
+                                    parameter) {
+  
+  if (status %in% c(2, 3, 4)) {
+    initial_conditions4 <- c(
+      DA1 = parameter[4] * solution[, "DM2"][[2]],
+      DM1 = parameter[4] * solution[, "DM2"][[2]],
+      E   = solution[, "E"][[2]]
+    )
     
-    lambdac <- parameter[1]
-    mu      <- parameter[2]
-    gamma   <- parameter[4]
-    lambdaa <- parameter[5]
+  } else if (status %in% c(1, 5, 6, 8, 9)) {
+    initial_conditions4 <- c(
+      DA1 = solution[, "DA2"][[2]],
+      DM1 = solution[, "DM1"][[2]],
+      E   = solution[, "E"][[2]]
+    )
     
-
-    
-    dDM1 <- -(lambdac + mu + lambdaa + gamma) * DM1 + (mu + lambdaa * E + lambdac * E * E) * DA2 + gamma*DM2
-    
-    dDM2 <- -(lambdac + mu + lambdaa) * DM2 + (mu + lambdaa * E + lambdac * E * E) * DA2
-    
-    
-    dE <- mu - (mu + lambdac) * E + lambdac * E * E
-    
-    dDA2 <- -gamma * DA2 + gamma * DM2
-
-    return(list(c(dDM1, dDM2, dE, dDA2)))
-  })
-}
-
-#' @keywords internal
-interval4 <- function(t, state, parameter) {
-  with(as.list(c(state, parameter)), {
-    lambdac <- parameter[1]
-    mu      <- parameter[2]
-    gamma   <- parameter[4]
-    lambdaa <- parameter[5]
-
-
-
-    dDA1 <- -gamma * DA1 + gamma * DM1
- 
-    
-    dDM1 <- -(lambdac + mu + lambdaa) * DM1 + (mu + lambdaa * E + lambdac * E * E) * DA1
-    
-    dE <- mu - (mu + lambdac) * E + lambdac * E * E
-    
-    return(list(c( dDA1, dDM1, dE)))
-  })
+  } else {
+    stop("Unsupported status in get_initial_conditions4()")
+  }
+  
+  return(initial_conditions4)
 }
 
