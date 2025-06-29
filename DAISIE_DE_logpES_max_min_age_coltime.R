@@ -9,6 +9,8 @@
 #' @return the loglikelihood
 #' @noRd
 
+  
+  
 DAISIE_DE_logpES_max_min_age_coltime <- function(brts,
                                                  status,
                                                  missnumspec,
@@ -92,11 +94,4 @@ DAISIE_DE_logpES_max_min_age_coltime <- function(brts,
   
 }
 
-DAISIE_DE_logpES_max_min_age_coltime (brts,
-                                       status = 9,
-                                       missnumspec,
-                                       parameter,
-                                       methode,
-                                       rtol,
-                                       atol)
 
