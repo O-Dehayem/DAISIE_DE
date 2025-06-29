@@ -7,12 +7,8 @@
 #' @inheritParams default_params_doc
 #' @return the loglikelihood
 #' @noRd
-DAISIE_DE_logpNE_max_min_age_coltime (brts,
-                                      status = 8,
-                                      parameter,
-                                      methode,
-                                      rtol,
-                                      atol)
+
+
 
 DAISIE_DE_logpNE_max_min_age_coltime <- function(brts,
                                                  status,
