@@ -87,7 +87,7 @@ DAISIE_DE_logpES <- function(brts,
                               rtol = rtol,
                               use_Rcpp = use_Rcpp)
     
-  }if (status == 5) {
+  }else if (status == 5) {
     initial_conditions3 <- get_initial_conditions3(status = status, sampling_fraction = sampling_fraction)
     
     solution3 <- solve_branch(interval_func = interval3_ES,
