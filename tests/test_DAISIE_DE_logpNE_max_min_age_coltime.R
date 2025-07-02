@@ -4,8 +4,8 @@ test_that("logpNE_max_min_age_coltime", {
     data("Galapagos_datalist", package = "DAISIE")
     datalist <- Galapagos_datalist
     
-    i <- 4
-    brts <- datalist[[i]]$branching_times
+
+    brts <- c(4,3, 1)
     
     
     parameter <- c(2.546591, 2.678781, Inf, 0.009326754, 1.008583)
