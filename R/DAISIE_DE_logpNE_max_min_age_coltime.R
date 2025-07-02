@@ -17,7 +17,8 @@ DAISIE_DE_logpNE_max_min_age_coltime <- function(brts,
                                                  rtol,
                                                  atol,
                                                  rcpp_methode = "odeint::bulirsch_stoer",
-                                                 use_Rcpp = FALSE) {
+                                                 use_Rcpp = FALSE,
+                                                 sampling_fraction = NA) {
   t0 <- brts[1]
   t1 <- brts[2]
   t2 <- brts[3]
@@ -30,7 +31,7 @@ DAISIE_DE_logpNE_max_min_age_coltime <- function(brts,
   initial_conditions1 <- get_initial_conditions2(
                                     status = status,
                                     brts = brts,
-                                    sampling_fraction = 1
+                                    sampling_fraction = sampling_fraction
                                   )
 
   solution1 <- solve_branch(interval_func = interval2_NE,
