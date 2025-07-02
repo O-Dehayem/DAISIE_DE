@@ -11,15 +11,7 @@ interval2_NE <- function(t, state, parameter) {
     dDM2 <- -(lambdac + mu + gamma + lambdaa) * DM2
     
     dE <- mu - (mu + lambdac) * E + lambdac * E * E
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 
-=======
-    
->>>>>>> Stashed changes
-=======
-    
->>>>>>> Stashed changes
     return(list(c(dDM2, dE)))
   })
 }
@@ -31,8 +23,6 @@ interval2_ES <- function(t, state, parameter) {
     mu      <- parameter[2]
     gamma   <- parameter[4]
     lambdaa <- parameter[5]
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 
     dDE <- -(lambdac + mu) * DE + 2 * lambdac * DE * E
     
@@ -45,41 +35,14 @@ interval2_ES <- function(t, state, parameter) {
 
     dDA3 <- -gamma * DA3 + gamma * DM3
     
-=======
-    
-    
-    
-    dDE <- -(lambdac + mu) * DE + 2 * lambdac * DE * E
-    
-=======
-    
-    
-    
-    dDE <- -(lambdac + mu) * DE + 2 * lambdac * DE * E
-    
->>>>>>> Stashed changes
-    dDM2 <- -(lambdac + mu + gamma + lambdaa) * DM2 + (lambdaa * DE + 2 * lambdac * DE * E) * DA3
-    
-    dDM3 <- -(lambdac + mu + lambdaa) * DM3 + (mu + lambdaa * E + lambdac * E * E) * DA3
-    
-    dE <- mu - (mu + lambdac) * E + lambdac * E * E
-    
-    dDA3 <- -gamma * DA3 + gamma * DM3
-    
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
     return(list(c(dDE, dDM2, dDM3, dE, dDA3)))
   })
 }
 
 
 interval2_EC <- function(t, state, parameter) {
-  with(as.list(c(state, parameter)), {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    
+  with(as.list(c(state, parameter)), {  
     lambdac <- parameter[1]
     mu      <- parameter[2]
     gamma   <- parameter[4]
@@ -94,34 +57,6 @@ interval2_EC <- function(t, state, parameter) {
     
     dDA3 <- -gamma * DA3 + gamma * DM3
     
-=======
-    
-    lambdac <- parameter[1]
-    mu      <- parameter[2]
-    gamma   <- parameter[4]
-    lambdaa <- parameter[5]
-    
-=======
-    
-    lambdac <- parameter[1]
-    mu      <- parameter[2]
-    gamma   <- parameter[4]
-    lambdaa <- parameter[5]
-    
->>>>>>> Stashed changes
-    
-    dDE <- -(lambdac + mu) * DE + 2 * lambdac * DE * E
-    
-    dDM3 <- -(lambdac + mu + lambdaa) * DM3 + (mu + lambdaa * E + lambdac * E * E) * DA3
-    
-    dE <- mu - (mu + lambdac) * E + lambdac * E * E
-    
-    dDA3 <- -gamma * DA3 + gamma * DM3
-    
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     return(list(c(dDE, dDM3, dE, dDA3)))
   })
 }
@@ -136,14 +71,7 @@ interval3_ES <- function(t, state, parameter) {
     gamma   <- parameter[4]
     lambdaa <- parameter[5]
     
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-    
->>>>>>> Stashed changes
-=======
-    
->>>>>>> Stashed changes
+
     dDE <- -(lambdac + mu) * DE + 2 * lambdac * DE * E 
     
     dDM1 <- -(lambdac + mu + lambdaa + gamma) * DM1 + gamma*DM2 + (mu + lambdaa * E + lambdac * E * E) * DA2
@@ -160,13 +88,8 @@ interval3_ES <- function(t, state, parameter) {
     return(list(c(dDE, dDM1, dDM2, dDM3, dE, dDA2, dDA3)))
   })
 }
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
 #' @keywords internal
 interval3_NE <- function(t, state, parameter) {
   with(as.list(c(state, parameter)), {
