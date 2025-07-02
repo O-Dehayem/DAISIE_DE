@@ -12,7 +12,11 @@ interval2_NE <- function(t, state, parameter) {
     
     dE <- mu - (mu + lambdac) * E + lambdac * E * E
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
+=======
+    
+>>>>>>> Stashed changes
 =======
     
 >>>>>>> Stashed changes
@@ -28,6 +32,7 @@ interval2_ES <- function(t, state, parameter) {
     gamma   <- parameter[4]
     lambdaa <- parameter[5]
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
     dDE <- -(lambdac + mu) * DE + 2 * lambdac * DE * E
     
@@ -46,6 +51,13 @@ interval2_ES <- function(t, state, parameter) {
     
     dDE <- -(lambdac + mu) * DE + 2 * lambdac * DE * E
     
+=======
+    
+    
+    
+    dDE <- -(lambdac + mu) * DE + 2 * lambdac * DE * E
+    
+>>>>>>> Stashed changes
     dDM2 <- -(lambdac + mu + gamma + lambdaa) * DM2 + (lambdaa * DE + 2 * lambdac * DE * E) * DA3
     
     dDM3 <- -(lambdac + mu + lambdaa) * DM3 + (mu + lambdaa * E + lambdac * E * E) * DA3
@@ -54,6 +66,9 @@ interval2_ES <- function(t, state, parameter) {
     
     dDA3 <- -gamma * DA3 + gamma * DM3
     
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     return(list(c(dDE, dDM2, dDM3, dE, dDA3)))
   })
@@ -62,6 +77,7 @@ interval2_ES <- function(t, state, parameter) {
 
 interval2_EC <- function(t, state, parameter) {
   with(as.list(c(state, parameter)), {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
     
     lambdac <- parameter[1]
@@ -85,6 +101,14 @@ interval2_EC <- function(t, state, parameter) {
     gamma   <- parameter[4]
     lambdaa <- parameter[5]
     
+=======
+    
+    lambdac <- parameter[1]
+    mu      <- parameter[2]
+    gamma   <- parameter[4]
+    lambdaa <- parameter[5]
+    
+>>>>>>> Stashed changes
     
     dDE <- -(lambdac + mu) * DE + 2 * lambdac * DE * E
     
@@ -94,6 +118,9 @@ interval2_EC <- function(t, state, parameter) {
     
     dDA3 <- -gamma * DA3 + gamma * DM3
     
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     return(list(c(dDE, dDM3, dE, dDA3)))
   })
@@ -110,6 +137,10 @@ interval3_ES <- function(t, state, parameter) {
     lambdaa <- parameter[5]
     
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+    
+>>>>>>> Stashed changes
 =======
     
 >>>>>>> Stashed changes
@@ -130,7 +161,10 @@ interval3_ES <- function(t, state, parameter) {
   })
 }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 #' @keywords internal
