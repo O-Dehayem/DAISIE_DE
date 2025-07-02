@@ -30,6 +30,10 @@
 #' )
 #' @noRd
 
+
+
+#' @export
+
 DAISIE_DE_logpEC <- function(brts,
                              status,
                              parameter,
@@ -38,7 +42,7 @@ DAISIE_DE_logpEC <- function(brts,
                              rtol  = 1e-15,
                              methode                 = "ode45",
                              rcpp_methode = "odeint::bulirsch_stoer",
-                             use_Rcpp = 0) {
+                             use_Rcpp = FALSE) {
   t0 <- brts[1]
   t1 <- brts[2]
   t2 <- brts[3]
@@ -84,11 +88,6 @@ DAISIE_DE_logpEC <- function(brts,
                                    atol = atol,
                                    rtol = rtol,
                                    use_Rcpp = use_Rcpp)
-    
-    
-    
-
-    
     # Initial conditions
     initial_conditions1 <- c(DE = parameter[1] * solution0[, "DE"][idx + 1] * solution1[, "DE"][2],
                              DM3 = 0, E = solution0[, "E"][idx + 1], DA3 = 1)
@@ -111,8 +110,7 @@ DAISIE_DE_logpEC <- function(brts,
                               rcpp_methode = rcpp_methode,
                               atol = atol,
                               rtol = rtol,
-                              use_Rcpp = use_Rcpp
-                            )
+                              use_Rcpp = use_Rcpp)
 
   # Initial conditions
   initial_conditions3 <- get_initial_conditions4(
@@ -122,8 +120,7 @@ DAISIE_DE_logpEC <- function(brts,
                                                 )
   
   
-                solution3 <- solve_branch(
-                                          interval_func = interval4,
+                solution3 <- solve_branch(interval_func = interval4,
                                           initial_conditions = initial_conditions3,
                                           time = time3,
                                           parameter = parameter,

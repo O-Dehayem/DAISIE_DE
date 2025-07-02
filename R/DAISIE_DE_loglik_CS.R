@@ -1,9 +1,11 @@
+
 DAISIE_DE_loglik_CS <- function( parameter,
                                  pars2,
                                  datalist,
                                  methode = "lsodes",
                                  abstolint = 1e-15,
-                                 reltolint = 1e-15)
+                                 reltolint = 1e-15,
+                                 use_rcpp = FALSE)
 {
 
   
@@ -17,7 +19,7 @@ DAISIE_DE_loglik_CS <- function( parameter,
                              rtol = 1e-15,
                              methode = "ode45",
                              rcpp_methode = "odeint::bulirsch_stoer",
-                             use_Rcpp = 0)
+                             use_Rcpp = use_rcpp)
     if (is.null(datalist[[1]]$not_present)) {
       loglik <- (datalist[[1]]$not_present_type1 + datalist[[1]]$not_present_type2) * logp0
       numimm <- (datalist[[1]]$not_present_type1 + datalist[[1]]$not_present_type2) + length(datalist) - 1
@@ -46,14 +48,14 @@ DAISIE_DE_loglik_CS <- function( parameter,
                                    rtol = 1e-15,
                                    methode = "ode45",
                                    rcpp_methode = "odeint::bulirsch_stoer",
-                                   use_Rcpp = 0)
+                                   use_Rcpp = use_rcpp)
     logp0_type2 <- DAISIE_DE_logp0(datalist,
                                    parameter,
                                    atol = 1e-15,
                                    rtol = 1e-15,
                                    methode = "ode45",
                                    rcpp_methode = "odeint::bulirsch_stoer",
-                                   use_Rcpp = 0)
+                                   use_Rcpp = use_rcpp)
     loglik <- datalist[[1]]$not_present_type1 * logp0_type1 + datalist[[1]]$not_present_type2 * logp0_type2
     logcond <- (cond == 1) * log(1 - exp((datalist[[1]]$not_present_type1 + numimm_type1) * logp0_type1 +
                                            (datalist[[1]]$not_present_type2 + numimm_type2) * logp0_type2))
@@ -76,7 +78,7 @@ DAISIE_DE_loglik_CS <- function( parameter,
                                         rtol  = 1e-15,
                                         methode                 = "ode45",
                                         rcpp_methode = "odeint::bulirsch_stoer",
-                                        use_Rcpp = 0)
+                                        use_Rcpp = use_rcpp)
     } else if (status == 2 && length(brts) == 2 || status == 3 && length(brts) == 2 || status == 5 && length(brts) == 2 || status == 6) {
   
         loglikelihood <- DAISIE_DE_logpES(brts,
@@ -87,7 +89,7 @@ DAISIE_DE_loglik_CS <- function( parameter,
                                           rtol  = 1e-15,
                                           methode                 = "ode45",
                                           rcpp_methode = "odeint::bulirsch_stoer",
-                                          use_Rcpp = 0)
+                                          use_Rcpp = use_rcpp)
     } else if (status == 2 && length(brts) > 2 || status == 3 && length(brts) > 2 || status == 6) {
       
       loglikelihood <- DAISIE_DE_logpEC(brts,
@@ -98,17 +100,16 @@ DAISIE_DE_loglik_CS <- function( parameter,
                                         rtol  = 1e-15,
                                         methode                 = "ode45",
                                         rcpp_methode = "odeint::bulirsch_stoer",
-                                        use_Rcpp = 0)
+                                        use_Rcpp = use_rcpp)
     }  else if (status == 8) {
       loglikelihood <- DAISIE_DE_logpNE_max_min_age_coltime(brts,
                                                             status,
                                                             parameter,
-                                                            missnumspec,
                                                             atol  = 1e-15,
                                                             rtol  = 1e-15,
                                                             methode                 = "ode45",
                                                             rcpp_methode = "odeint::bulirsch_stoer",
-                                                            use_Rcpp = 0)
+                                                            use_Rcpp = use_rcpp)
     } else if (status == 9) {
       loglikelihood <- DAISIE_DE_logpES_max_min_age_coltime(brts,
                                                             status,
@@ -118,7 +119,7 @@ DAISIE_DE_loglik_CS <- function( parameter,
                                                             rtol  = 1e-15,
                                                             methode                 = "ode45",
                                                             rcpp_methode = "odeint::bulirsch_stoer",
-                                                            use_Rcpp = 0)
+                                                            use_Rcpp = use_rcpp)
     } else {
       stop("Unknown status value: ", status)
     }

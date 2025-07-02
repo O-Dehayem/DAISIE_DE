@@ -34,7 +34,7 @@ DAISIE_DE_logpES <- function(brts,
                              rtol  = 1e-15,
                              methode                 = "ode45",
                              rcpp_methode = "odeint::bulirsch_stoer",
-                             use_Rcpp = 0) {
+                             use_Rcpp = FALSE) {
   
   
   
@@ -97,7 +97,8 @@ DAISIE_DE_logpES <- function(brts,
                               methode = methode,
                               rcpp_methode = rcpp_methode,
                               atol = atol,
-                              rtol = rtol)
+                              rtol = rtol,
+                              use_Rcpp = use_Rcpp)
     
     initial_conditions4 <- get_initial_conditions4(status = status, solution = solution3, parameter = parameter)
     solution4 <- solve_branch(interval_func = interval4,

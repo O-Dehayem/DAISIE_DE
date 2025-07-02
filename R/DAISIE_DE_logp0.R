@@ -29,7 +29,7 @@ DAISIE_DE_logp0 <- function(datalist,
                             rtol = 1e-15,
                             methode = "ode45",
                             rcpp_methode = "odeint::bulirsch_stoer",
-                            use_Rcpp = 0) {
+                            use_Rcpp = FALSE) {
   
 
   t0 <- datalist[[1]]$island_age
@@ -49,7 +49,8 @@ DAISIE_DE_logp0 <- function(datalist,
                             methode = methode,
                             rcpp_methode = rcpp_methode,
                             atol = atol,
-                            rtol = rtol)
+                            rtol = rtol,
+                            use_Rcpp = use_Rcpp)
   
   # Extract log-likelihood
   Lk <- solution4[, "DA1"][[2]]

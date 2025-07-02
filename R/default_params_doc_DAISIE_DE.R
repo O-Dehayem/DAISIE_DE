@@ -44,4 +44,5 @@ NULL
 #' @param methode The numerical method to use for solving the system of differential equations.
 #' @param reltolint Relative tolerance for numerical integration.
 #' @param abstolint Absolute tolerance for numerical integration.
-#'
+#' @param use_Rcpp default is FALSE: use no Rcpp. if set to TRUE, Rcpp is used
+#' for the integration

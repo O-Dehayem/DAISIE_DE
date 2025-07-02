@@ -98,7 +98,8 @@ DAISIE_DE_logpNE <- function(brts,
       methode = methode,
       rcpp_methode = rcpp_methode,
       atol = atol,
-      rtol = rtol
+      rtol = rtol,
+      use_Rcpp = use_Rcpp
     )
     
     initial_conditions4 <- get_initial_conditions4(
