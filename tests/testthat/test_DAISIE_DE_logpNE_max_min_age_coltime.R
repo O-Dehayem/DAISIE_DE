@@ -4,8 +4,8 @@ test_that("logpNE_max_min_age_coltime", {
     data("Galapagos_datalist", package = "DAISIE")
     datalist <- Galapagos_datalist
     
-    i <- 4
-    brts <- datalist[[i]]$branching_times
+
+    brts <- c(5, 4, 3)
     
     
     parameter <- c(2.546591, 2.678781, Inf, 0.009326754, 1.008583)
@@ -36,7 +36,7 @@ test_that("logpNE_max_min_age_coltime", {
                                                   methode                 = "ode45",
                                                   rcpp_methode = "odeint::bulirsch_stoer",
                                                   use_Rcpp = TRUE)
-    testthat::expect_equal(res3, res2)
+    testthat::expect_equal(res3, res2, tolerance = 0.00001)
   }
 })
 

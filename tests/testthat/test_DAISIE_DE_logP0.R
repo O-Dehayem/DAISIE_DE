@@ -8,11 +8,9 @@ test_that("DAISIE_logp0 is correct", {
  
       
       res1 <- DAISIE:::DAISIE_DE_logp0(
-        island_age = datalist[[1]]$island_age,
+        datalist = datalist,
         pars1 = c(2.546591, 2.678781, 2.678781, 0.009326754, 1.008583),
-        methode = "lsodes",
-        reltolint = 1e-10,
-        abstolint = 1e-10
+        methode = "lsodes"
       )
       
       res2 <- DAISIE_DE_logp0(datalist,
