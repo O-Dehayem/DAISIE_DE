@@ -27,8 +27,18 @@ test_that("logpES_max_min_age_coltime", {
                                              missnumspec = 0,
                                              datalist = datalist)
     
- 
     testthat::expect_equal(res1, res2, tolerance = 1e-2)
+    
+    res3 <- DAISIE_DE_logpES_max_min_age_coltime (brts,
+                                                  status = 9,
+                                                  parameter,
+                                                  missnumspec = 0,
+                                                  atol  = 1e-15,
+                                                  rtol  = 1e-15,
+                                                  methode                 = "ode45",
+                                                  rcpp_methode = "odeint::bulirsch_stoer",
+                                                  use_Rcpp = TRUE)
+    testthat::expect_equal(res3, res2, tolerance = 1e-2)
   }
 })
 
