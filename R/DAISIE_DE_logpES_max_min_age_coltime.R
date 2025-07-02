@@ -66,9 +66,6 @@ DAISIE_DE_logpES_max_min_age_coltime <- function(brts,
                             rtol = rtol,
                             use_Rcpp = use_Rcpp)
 
-  
-  
-  
   initial_conditions3 <- get_initial_conditions4(
     status = status,
     solution = solution2,

@@ -26,7 +26,6 @@ solve_branch <- function(interval_func,
       atol = atol,
       rtol = rtol
     )
-
   } else {
     interval_name <- as.character(substitute(interval_func))
     solution <- solve_branch_cpp(interval_name,

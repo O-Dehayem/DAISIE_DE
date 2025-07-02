@@ -30,7 +30,7 @@ DAISIE_DE_logpNE_max_min_age_coltime <- function(brts,
   initial_conditions1 <- get_initial_conditions2(
                                     status = status,
                                     brts = brts,
-                                    sampling_fraction = sampling_fraction
+                                    sampling_fraction = 1
                                   )
 
   solution1 <- solve_branch(interval_func = interval2_NE,

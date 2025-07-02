@@ -21,7 +21,7 @@ test_that("DAISIE_logp0 is correct", {
                               rtol = 1e-15,
                               methode = "ode45",
                               rcpp_methode = "odeint::bulirsch_stoer",
-                              use_Rcpp = 0
+                              use_Rcpp = FALSE
       )
       
       testthat::expect_equal(res1, res2, tolerance = 1e-6)
@@ -32,7 +32,7 @@ test_that("DAISIE_logp0 is correct", {
                               rtol = 1e-15,
                               methode = "ode45",
                               rcpp_methode = "odeint::bulirsch_stoer",
-                              use_Rcpp = 0
+                              use_Rcpp = TRUE
       )
       
       testthat::expect_equal(res1, res2, tolerance = 1e-6)

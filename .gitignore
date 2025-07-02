@@ -3,3 +3,4 @@
 .RData
 .Ruserdata
 R/interval_functions.R
+*.so
