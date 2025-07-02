@@ -54,73 +54,51 @@ Rcpp::List calc_ll_single_branch(std::unique_ptr<ODE> od,
   return NA_REAL;
 }
 
+enum class string_code {
+  interval2_NE,
+  interval2_ES,
+  interval2_EC,
+  interval3_ES,
+  interval3_NE,
+  interval4
+};
 
+string_code hash_string(const std::string& s) {
+  if (s == "interval2_NE") return string_code::interval2_NE;
+  if (s == "interval2_ES") return string_code::interval2_ES;
+  if (s == "interval2_EC") return string_code::interval2_EC;
+  if (s == "interval3_ES") return string_code::interval3_ES;
+  if (s == "interval3_NE") return string_code::interval3_NE;
+  if (s == "interval4")    return string_code::interval4;
+  
+  return string_code::interval4;
+}
 
 // [[Rcpp::export]]
-Rcpp::List cpp_solve(const Rcpp::NumericVector& lambda_cs,
-                     const Rcpp::NumericVector& lambda_as,
-                     const Rcpp::NumericVector& mus,
-                     const Rcpp::NumericVector& gammas,
-                     const Rcpp::NumericMatrix& qs,
-                     const double& p,
-                     const Rcpp::NumericVector& tma,
+Rcpp::List cpp_solve(const double& lambda_c,
+                     const double& lambda_a,
+                     const double& mu,
+                     const double& gamma,
                      const std::string& chosen_interval,
                      const std::string& inte_method,
                      const Rcpp::NumericVector& init_states,
                      const Rcpp::NumericVector& time,
                      double atol,
                      double rtol) {
-  auto num_unique_states = lambda_cs.size();
-
-  if (chosen_interval == "interval2") {
-    return calc_ll_single_branch(
-      std::make_unique<loglik::interval2>(lambda_cs,
-                                          lambda_as,
-                                          mus,
-                                          gammas,
-                                          qs,
-                                          p,
-                                          tma,
-                                          num_unique_states),
-                                          init_states,
-                                          time,
-                                          inte_method,
-                                          atol,
-                                          rtol);
+  
+  switch( hash_string(chosen_interval)) {
+    case string_code::interval2_NE: 
+      return calc_ll_single_branch(std::make_unique<loglik::interval2_NE>(lambda_c, lambda_a, mu, gamma), init_states, time, inte_method, atol, rtol);
+    case string_code::interval2_ES:
+      return calc_ll_single_branch(std::make_unique<loglik::interval2_ES>(lambda_c, lambda_a, mu, gamma), init_states, time, inte_method, atol, rtol);
+    case string_code::interval2_EC:
+      return calc_ll_single_branch(std::make_unique<loglik::interval2_EC>(lambda_c, lambda_a, mu, gamma), init_states, time, inte_method, atol, rtol);
+    case string_code::interval3_ES:
+      return calc_ll_single_branch(std::make_unique<loglik::interval3_ES>(lambda_c, lambda_a, mu, gamma), init_states, time, inte_method, atol, rtol);
+    case string_code::interval3_NE:
+      return calc_ll_single_branch(std::make_unique<loglik::interval3_NE>(lambda_c, lambda_a, mu, gamma), init_states, time, inte_method, atol, rtol);
+    case string_code::interval4:
+      return calc_ll_single_branch(std::make_unique<loglik::interval4   >(lambda_c, lambda_a, mu, gamma), init_states, time, inte_method, atol, rtol);
   }
-  if (chosen_interval == "interval3") {
-    return calc_ll_single_branch(
-      std::make_unique<loglik::interval3>(lambda_cs,
-                                          lambda_as,
-                                          mus,
-                                          gammas,
-                                          qs,
-                                          p,
-                                          tma,
-                                          num_unique_states),
-                                          init_states,
-                                          time,
-                                          inte_method,
-                                          atol,
-                                          rtol);
-  }
-
-  if (chosen_interval == "interval4") {
-    return calc_ll_single_branch(
-      std::make_unique<loglik::interval4>(lambda_cs,
-                                          lambda_as,
-                                          mus,
-                                          gammas,
-                                          qs,
-                                          p,
-                                          tma,
-                                          num_unique_states),
-                                          init_states,
-                                          time,
-                                          inte_method,
-                                          atol,
-                                          rtol);
-  }
-
   return NA_REAL;
 }

@@ -39,7 +39,7 @@ DAISIE_DE_loglik_all_choosepar <- function(trparsopt,
     {
       loglik <- -Inf
     } else {
-      loglik <- DAISIE_DE_loglik_CS(pars1 = pars1,
+      loglik <- DAISIE_DE_loglik_CS(parameter = pars1,
                                     pars2 = pars2,
                                     datalist = datalist,
                                     methode = methode,

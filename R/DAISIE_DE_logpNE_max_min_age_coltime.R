@@ -8,7 +8,7 @@
 #' @return the loglikelihood
 #' @noRd
 
-
+#' @export
 
 DAISIE_DE_logpNE_max_min_age_coltime <- function(brts,
                                                  status,
@@ -17,7 +17,7 @@ DAISIE_DE_logpNE_max_min_age_coltime <- function(brts,
                                                  rtol,
                                                  atol,
                                                  rcpp_methode = "odeint::bulirsch_stoer",
-                                                 use_Rcpp = 0) {
+                                                 use_Rcpp = FALSE) {
   t0 <- brts[1]
   t1 <- brts[2]
   t2 <- brts[3]
@@ -25,7 +25,6 @@ DAISIE_DE_logpNE_max_min_age_coltime <- function(brts,
   time1 <- c(tp, t2)
   time2 <- c(t2, t1)
   time3 <- c(t1, t0)
-  parameters <- pars1
   
   # Initial conditions
   initial_conditions1 <- get_initial_conditions2(

@@ -9,7 +9,7 @@
 #' @return the loglikelihood
 #' @noRd
 
-  
+#' @export  
   
 DAISIE_DE_logpES_max_min_age_coltime <- function(brts,
                                                  status,
@@ -19,7 +19,7 @@ DAISIE_DE_logpES_max_min_age_coltime <- function(brts,
                                                  rtol,
                                                  atol,
                                                  rcpp_methode = "odeint::bulirsch_stoer",
-                                                 use_Rcpp = 0) {
+                                                 use_Rcpp = FALSE) {
   t0 <- brts[1]
   t1 <- brts[2]
   t2 <- brts[3]
@@ -27,15 +27,12 @@ DAISIE_DE_logpES_max_min_age_coltime <- function(brts,
   time1 <- c(tp, t2)
   time2 <- c(t2, t1)
   time3 <- c(t1, t0)
-  parameters <- pars1
 
-  
-  
   # Initial conditions
   
   initial_conditions1 <- get_initial_conditions2(status = status,
                                                  brts = brts,
-                                                 sampling_fraction = sampling_fraction)
+                                                 sampling_fraction = 1)
   
   solution1 <- solve_branch(interval_func = interval2_ES,
                             initial_conditions = initial_conditions1,
@@ -44,7 +41,8 @@ DAISIE_DE_logpES_max_min_age_coltime <- function(brts,
                             methode = methode,
                             rcpp_methode = rcpp_methode,
                             atol = atol,
-                            rtol = rtol)
+                            rtol = rtol,
+                            use_Rcpp = use_Rcpp)
 
   
   # Initial conditions
@@ -65,7 +63,8 @@ DAISIE_DE_logpES_max_min_age_coltime <- function(brts,
                             methode = methode,
                             rcpp_methode = rcpp_methode,
                             atol = atol,
-                            rtol = rtol)
+                            rtol = rtol,
+                            use_Rcpp = use_Rcpp)
 
   
   
@@ -91,7 +90,4 @@ DAISIE_DE_logpES_max_min_age_coltime <- function(brts,
   L1 <- solution3[, "DA1"][[2]]
   logL1b <- log(L1)
   return(logL1b)
-  
 }
-
-

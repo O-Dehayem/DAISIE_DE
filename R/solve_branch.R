@@ -14,9 +14,9 @@ solve_branch <- function(interval_func,
                          rcpp_methode = "odeint::bulirsch_stoer",
                          atol,
                          rtol,
-                         use_Rcpp = 0) {
+                         use_Rcpp = TRUE) {
   solution <- c()
-  if (use_Rcpp <= 1) {
+  if (use_Rcpp == FALSE) {
     solution <- deSolve::ode(
       y = initial_conditions,
       times = time,

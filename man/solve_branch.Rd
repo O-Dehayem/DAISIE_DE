@@ -13,7 +13,7 @@ solve_branch(
   rcpp_methode = "odeint::bulirsch_stoer",
   atol,
   rtol,
-  use_Rcpp = 0
+  use_Rcpp = TRUE
 )
 }
 \arguments{

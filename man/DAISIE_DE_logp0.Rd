@@ -11,7 +11,7 @@ DAISIE_DE_logp0(
   rtol = 1e-15,
   methode = "ode45",
   rcpp_methode = "odeint::bulirsch_stoer",
-  use_Rcpp = 0
+  use_Rcpp = FALSE
 )
 }
 \description{
