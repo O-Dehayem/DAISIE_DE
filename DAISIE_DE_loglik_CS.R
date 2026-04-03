@@ -77,7 +77,7 @@ DAISIE_DE_loglik_CS <- function( parameter,
                                         methode                 = "ode45",
                                         rcpp_methode = "odeint::bulirsch_stoer",
                                         use_Rcpp = 0)
-    } else if (status == 2 && length(brts) == 2 || status == 3 && length(brts) == 2 || status == 5 && length(brts) == 2 || status == 6) {
+    } else if (status == 2 && length(brts) == 2 || status == 3 && length(brts) == 2 || status == 5 && length(brts) == 2) {
   
         loglikelihood <- DAISIE_DE_logpES(brts,
                                           status,
